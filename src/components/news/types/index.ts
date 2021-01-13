@@ -1,0 +1,6 @@
+export * from "./news-admin"
+export * from "./news-delete.request"
+export * from "./news-list"
+export * from "./news-tournament"
+export * from "./news-update-props"
+export * from "./news.create.request"
