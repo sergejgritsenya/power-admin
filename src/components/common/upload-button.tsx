@@ -1,57 +1,35 @@
-import { Button, ButtonProps } from "@material-ui/core"
-import React, { FC } from "react"
+import { Button, makeStyles } from "@material-ui/core"
+import React, { ChangeEvent, FC } from "react"
 
 type TFileUploadButtonProps = {
-  uploadFile: (file: File) => void
-  inputName: string
-} & ButtonProps
-export const FileUploadButton: FC<TFileUploadButtonProps> = ({
-  uploadFile,
-  inputName,
-  ...rest
-}) => (
-  <label htmlFor={inputName} style={{ display: "block" }}>
-    <Button
-      variant="contained"
-      color="primary"
-      onClick={() => {
-        document.getElementsByName(inputName)[0].click()
-      }}
-      {...rest}
-    >
-      {rest.children}
-    </Button>
-    <UploadInput uploadFile={uploadFile} name={inputName} />
-  </label>
-)
-
-type TUploadInputProps = {
-  uploadFile: (file: File) => void
   name: string
+  upload: (e: ChangeEvent<HTMLInputElement>) => void
 }
-const UploadInput: FC<TUploadInputProps> = ({ name, uploadFile }) => {
-  const upload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
-    if (files && files.length > 0) {
-      const file = files[0]
-      uploadFile(file)
-    }
-    e.target.value = ""
-  }
-
+export const FileUploadButton: FC<TFileUploadButtonProps> = ({ children, name, upload }) => {
+  const { input, label } = useStyles()
   return (
-    <input
-      style={{
-        position: "absolute",
-        width: 0,
-        height: 0,
-        opacity: 0,
-        visibility: "hidden",
-        right: "10000px",
-      }}
-      onChange={upload}
-      type="file"
-      name={name}
-    />
+    <label htmlFor={name} className={label}>
+      <Button
+        color="primary"
+        fullWidth
+        onClick={() => document.getElementsByName(name)[0].click()}
+        variant="contained"
+      >
+        {children}
+      </Button>
+      <input className={input} name={name} onChange={upload} type="file" />
+    </label>
   )
 }
+
+const useStyles = makeStyles({
+  input: {
+    position: "absolute",
+    width: 0,
+    height: 0,
+    opacity: 0,
+    visibility: "hidden",
+    right: "10000px",
+  },
+  label: { display: "block" },
+})

@@ -2,13 +2,20 @@ import { Container, makeStyles } from "@material-ui/core"
 import React, { FC } from "react"
 import { Route, Switch } from "react-router-dom"
 import {
+  Admin,
+  AdminAccount,
+  AdminCreate,
   NewsCreate,
   NewsListLoader,
   NewsLoader,
+  ShopLoader,
   TournamentCreate,
   TournamentListLoader,
   TournamentLoader,
 } from "../components"
+import { ShopCreate } from "../components"
+import { ShopListLoader } from "../components"
+import { AdminListLoader } from "../components"
 import { NotFound } from "./not-found"
 
 export const Main: FC = () => {
@@ -18,9 +25,17 @@ export const Main: FC = () => {
       <Container maxWidth="lg" className={classes.container}>
         <Switch>
           <Route exact path="/">
-            <>Hello</>
+            <AdminAccount />
           </Route>
-          <Route exact path="/admins"></Route>
+          <Route exact path="/admins">
+            <AdminListLoader />
+          </Route>
+          <Route exact path="/admins/create">
+            <AdminCreate />
+          </Route>
+          <Route exact path="/admins/:id">
+            <Admin />
+          </Route>
           <Route exact path="/news">
             <NewsListLoader />
           </Route>
@@ -39,7 +54,15 @@ export const Main: FC = () => {
           <Route path="/tournaments/:id">
             <TournamentLoader />
           </Route>
-          <Route exact path="/shop"></Route>
+          <Route exact path="/shop">
+            <ShopListLoader />
+          </Route>
+          <Route exact path="/shop/create">
+            <ShopCreate />
+          </Route>
+          <Route path="/shop/:id">
+            <ShopLoader />
+          </Route>
           <Route>
             <NotFound />
           </Route>

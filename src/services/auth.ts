@@ -1,6 +1,6 @@
 import { TAuthRequest, TAuthResponse, TRefreshRequest } from "../components"
 import { TAdminResponse } from "../components/account/types/admin.response"
-import { auth_routes, root_routes } from "../main"
+import { auth_routes, admin_routes } from "../main"
 import { useAxios } from "./axios"
 import { ELocalStorageKeys } from "./types"
 
@@ -34,8 +34,7 @@ class Auth {
       await this.refreshTokens()
     }
     return await this.axios.makeRequest<TAdminResponse>({
-      method: "POST",
-      url: root_routes.admin_me,
+      url: admin_routes.admin_me,
     })
   }
 

@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, Grid, TextField } from "@material-ui/core"
-import { useObserver } from "mobx-react-lite"
+import { Observer, useObserver } from "mobx-react-lite"
 import { useSnackbar } from "notistack"
 import React, { FC } from "react"
 import { tournament_routes } from "../../main"
@@ -75,7 +75,7 @@ const TournamentField: FC<TTournamentFieldProps> = (props) => {
         </Grid>
         {tournament.validation && <SaveButton save={update} />}
       </CardContent>
-      <Locker show={tournament.is_loading} />
+      {tournament.is_loading && <Locker />}
     </Card>
   ))
 }
@@ -83,10 +83,9 @@ const TournamentField: FC<TTournamentFieldProps> = (props) => {
 const LogoUpload: FC = () => {
   const tournament = useTournamentContext()
   const axios = useAxios()
-  const logo_src = tournament.logo || "/static/default-img.png"
-  const upload = async (file: File) => {
-    const res = await axios.makeRequest<string, File>({
-      data: file,
+  const upload = async (data: FormData) => {
+    const res = await axios.makeRequest<string, FormData>({
+      data,
       method: "PATCH",
       url: tournament_routes.upload(tournament.id),
     })
@@ -97,7 +96,11 @@ const LogoUpload: FC = () => {
       method: "PATCH",
       url: tournament_routes.deleteLogo(tournament.id),
     })
-    tournament.setLogo(null)
+    tournament.setLogo("")
   }
-  return useObserver(() => <ImageUpload src={logo_src} upload={upload} deleteLogo={deleteLogo} />)
+  return (
+    <Observer>
+      {() => <ImageUpload src={tournament.logo} upload={upload} deleteLogo={deleteLogo} />}
+    </Observer>
+  )
 }

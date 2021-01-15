@@ -1,4 +1,4 @@
-import { useObserver } from "mobx-react-lite"
+import { Observer } from "mobx-react-lite"
 import React, { FC } from "react"
 import { news_routes } from "../../main"
 import { useAxios } from "../../services"
@@ -10,10 +10,9 @@ type TNewsLogoUploadProps = {
 }
 export const NewsLogoUpload: FC<TNewsLogoUploadProps> = ({ news }) => {
   const axios = useAxios()
-  const logo_src = news.logo || "/static/default-img.png"
-  const upload = async (file: File) => {
-    const res = await axios.makeRequest<string, File>({
-      data: file,
+  const upload = async (data: FormData) => {
+    const res = await axios.makeRequest<string, FormData>({
+      data,
       method: "PATCH",
       url: news_routes.upload(news.id),
     })
@@ -24,7 +23,11 @@ export const NewsLogoUpload: FC<TNewsLogoUploadProps> = ({ news }) => {
       method: "PATCH",
       url: news_routes.deleteLogo(news.id),
     })
-    news.setLogo(null)
+    news.setLogo("")
   }
-  return useObserver(() => <ImageUpload src={logo_src} upload={upload} deleteLogo={deleteLogo} />)
+  return (
+    <Observer>
+      {() => <ImageUpload src={news.logo} upload={upload} deleteLogo={deleteLogo} />}
+    </Observer>
+  )
 }

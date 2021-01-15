@@ -1,26 +1,23 @@
 import { Instance, types } from "mobx-state-tree"
-import {
-  TTournament,
-  TTournamentImage,
-  TTournamentUpdateRequest,
-  TTournamentVideo,
-} from "../tournament"
-import { TournamentImageModel } from "./tournament-image.model"
-import { TournamentVideoModel } from "./tournament-video.model"
+import { TShop, TShopImage, TShopUpdateProps } from "../shop"
+import { ShopImageModel } from "./shop-image.model"
 
-export const TournamentModel = types
+export const ShopModel = types
   .model({
     id: types.string,
     name: "",
+    price: "",
     logo: "",
     description: "",
     is_loading: false,
-    images: types.array(TournamentImageModel),
-    videos: types.array(TournamentVideoModel),
+    images: types.array(ShopImageModel),
   })
   .actions((self) => ({
     setName(name: string) {
       self.name = name
+    },
+    setPrice(price: string) {
+      self.price = price
     },
     setLogo(logo: string) {
       self.logo = logo
@@ -28,47 +25,52 @@ export const TournamentModel = types
     setDescription(description: string) {
       self.description = description
     },
+
     setLoading(is_loading: boolean) {
       self.is_loading = is_loading
     },
-    setImages(images: TTournamentImage[]) {
-      const image_models = images.map((image) => TournamentImageModel.create(image))
+    setImages(images: TShopImage[]) {
+      const image_models = images.map((image) => ShopImageModel.create(image))
       self.images.replace(image_models)
-    },
-    setVideos(videos: TTournamentVideo[]) {
-      const video_models = videos.map((video) => TournamentVideoModel.create(video))
-      self.videos.replace(video_models)
     },
   }))
   .actions((self) => ({
-    updateAll(data: TTournament) {
+    updateAll(data: TShop) {
       self.setName(data.name)
+      self.setPrice(data.price)
       self.setLogo(data.logo || "")
       self.setDescription(data.description)
       self.setImages(data.images)
-      self.setVideos(data.videos)
     },
   }))
   .views((self) => ({
-    get json(): TTournamentUpdateRequest {
-      return { name: self.name.trim(), description: self.description.trim() }
+    get json(): TShopUpdateProps {
+      return {
+        name: self.name.trim(),
+        price: self.price.trim(),
+        description: self.description.trim(),
+      }
     },
     get validation(): boolean {
-      return !!self.name.trim() && !!self.description.trim()
+      return !!self.name.trim() && !!self.price.trim() && !!self.description.trim()
     },
   }))
 
-export interface ITournamentModel extends Instance<typeof TournamentModel> {}
+export interface IShopModel extends Instance<typeof ShopModel> {}
 
-export const TournamentCreateModel = types
+export const ShopCreateModel = types
   .model({
     name: "",
+    price: "",
     description: "",
     is_loading: false,
   })
   .actions((self) => ({
     setName(name: string) {
       self.name = name
+    },
+    setPrice(price: string) {
+      self.price = price
     },
     setDescription(description: string) {
       self.description = description
@@ -78,8 +80,12 @@ export const TournamentCreateModel = types
     },
   }))
   .views((self) => ({
-    get json(): TTournamentUpdateRequest {
-      return { name: self.name.trim(), description: self.description.trim() }
+    get json(): TShopUpdateProps {
+      return {
+        name: self.name.trim(),
+        price: self.price.trim(),
+        description: self.description.trim(),
+      }
     },
     get validation(): boolean {
       return !!self.name.trim() && !!self.description.trim()

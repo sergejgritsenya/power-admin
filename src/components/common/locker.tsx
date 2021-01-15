@@ -1,20 +1,16 @@
 import { Backdrop, CircularProgress, makeStyles } from "@material-ui/core"
 import React, { FC } from "react"
 
-type TLockerProps = {
-  show: boolean
-  position?: "fixed" | "absolute"
-}
-export const Locker: FC<TLockerProps> = ({ show }) => {
-  const classes = useStyles()
+export const Locker: FC = () => {
+  const { locker } = useStyles()
   return (
-    <Backdrop open={show} className={classes.locker}>
+    <Backdrop open={true} className={locker}>
       <CircularProgress color="secondary" size={50} />
     </Backdrop>
   )
 }
 
-const useStyles = makeStyles(_theme => ({
+const useStyles = makeStyles(() => ({
   locker: {
     position: "fixed",
     top: 0,

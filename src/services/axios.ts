@@ -4,7 +4,7 @@ import { EAuthKey, ELocalStorageKeys, TAxiosRequest } from "./types"
 export class AxiosService {
   private axios: AxiosInstance
   private static instance: AxiosService
-  private baseUrl = process.env.API_URL || "http://localhost:3088"
+  private baseUrl = process.env.REACT_APP_API_URL || "http://localhost:3088"
   private constructor() {
     this.axios = axios.create({ baseURL: this.baseUrl })
   }
@@ -17,7 +17,10 @@ export class AxiosService {
 
   public makeRequest = async <T, K = undefined>(props: TAxiosRequest<K>): Promise<T> => {
     const { data, method, url } = props
-    const headers = { [EAuthKey.admin]: localStorage.getItem(ELocalStorageKeys.access) || "" }
+    const headers = {
+      ...(props.headers || {}),
+      [EAuthKey.admin]: localStorage.getItem(ELocalStorageKeys.access) || "",
+    }
     const res = await this.axios(url, { data, headers, method })
     return res.data
   }

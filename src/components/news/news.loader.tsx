@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useMemo } from "react"
 import { useParams } from "react-router-dom"
-import { news_routes } from "../../main/routes-2"
+import { news_routes } from "../../main/routes"
 import { useAxios, useSnack } from "../../services"
 import { NewsModel } from "../models"
 import { News } from "./news"

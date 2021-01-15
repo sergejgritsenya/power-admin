@@ -61,7 +61,7 @@ export const TournamentCreate: FC = () => {
         </Grid>
         {model.validation && <SaveButton save={create} />}
       </CardContent>
-      <Locker show={model.is_loading} />
+      {model.is_loading && <Locker />}
     </Card>
   ))
 }

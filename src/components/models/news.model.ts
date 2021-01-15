@@ -40,9 +40,9 @@ export const NewsModel = types
     id: "",
     title: "",
     publish: false,
-    logo: types.maybeNull(types.string),
+    logo: "",
     text: "",
-    tournament_id: types.maybeNull(types.string),
+    tournament_id: "",
     is_loading: false,
     tournaments: types.array(NewsTournamentModel),
   })
@@ -55,7 +55,7 @@ export const NewsModel = types
       self.publish = publish
     },
 
-    setLogo(logo: string | null) {
+    setLogo(logo: string) {
       self.logo = logo
     },
 
@@ -63,7 +63,7 @@ export const NewsModel = types
       self.text = text
     },
 
-    setTournament(tournament_id: string | null) {
+    setTournament(tournament_id: string) {
       self.tournament_id = tournament_id
     },
 

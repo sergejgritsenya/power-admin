@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "PORT=4000 react-scripts start",
-    "build": "react-scripts build"
+    "build": "react-scripts build",
+    "docker:build": "docker build -t power-admin ."
   },
   "dependencies": {
     "@material-ui/core": "^4.11.2",

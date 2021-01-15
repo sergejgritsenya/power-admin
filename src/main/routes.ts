@@ -1,44 +1,53 @@
-const routes = {
+const control_routes = {
   control: "/control",
 }
-const control_routes = {
-  auth: `${routes.control}/auth`,
-  admin: `${routes.control}/admin`,
-  tournament: `${routes.control}/tournament`,
-  shop: `${routes.control}/shop`,
-}
-export const auth_routes = {
-  login: `${control_routes.auth}/login`,
-  refresh: `${control_routes.auth}/refresh`,
-}
-export const root_routes = {
-  list: `${control_routes.admin}/list`,
-  create: `${control_routes.admin}/create`,
-  update: `${control_routes.admin}/update`,
-  change_pass: `${control_routes.admin}/change_pass`,
-  delete: `${control_routes.admin}/delete`,
-  admin_me: `${control_routes.admin}/admin_me`,
-  root: `${control_routes.admin}/:admin_id`,
-}
-export const admin_routes = {
-  get: `${root_routes.root}/get`,
-  logout: `${root_routes.root}/logout`,
+
+const root_routes = {
+  admin: `${control_routes.control}/admin`,
+  auth: `${control_routes.control}/auth`,
+  news: `${control_routes.control}/news`,
+  shop: `${control_routes.control}/shop`,
+  tournament: `${control_routes.control}/tournament`,
 }
 
-export const shop_root_routes = {
-  list: `${control_routes.shop}/list`,
-  create: `${control_routes.shop}/create`,
-  delete: `${control_routes.shop}/delete`,
-  root: `${control_routes.shop}/:shop_id`,
+export const admin_routes = {
+  root: root_routes.admin,
+  change_pass: `${root_routes.admin}/change_pass`,
+  admin_me: `${root_routes.admin}/admin_me`,
+  get: (id: string) => `${root_routes.admin}/${id}`,
 }
+
+export const auth_routes = {
+  login: `${root_routes.auth}/login`,
+  refresh: `${root_routes.auth}/refresh`,
+}
+
+export const news_routes = {
+  root: root_routes.news,
+  get: (id: string) => `${root_routes.news}/${id}`,
+  upload: (id: string) => `${root_routes.news}/upload/${id}`,
+  deleteLogo: (id: string) => `${root_routes.news}/deleteLogo/${id}`,
+}
+
 export const shop_routes = {
-  get: `${shop_root_routes.root}/get`,
-  upload: `${shop_root_routes.root}/upload`,
-  deleteLogo: `${shop_root_routes.root}/deleteLogo`,
-  update: `${shop_root_routes.root}/update`,
-  image: `${shop_root_routes.root}/image`,
+  root: root_routes.shop,
+  get: (id: string) => `${root_routes.shop}/${id}`,
+  upload: (id: string) => `${root_routes.shop}/upload/${id}`,
+  deleteLogo: (id: string) => `${root_routes.shop}/deleteLogo/${id}`,
+  image: (id: string) => `${root_routes.shop}/image/${id}`,
+  deleteImage: (shop_id: string, image_id: string) =>
+    `${root_routes.shop}/image/${shop_id}/${image_id}`,
 }
-export const shop_image_routes = {
-  upload: `${shop_routes.image}/upload`,
-  delete: `${shop_routes.image}/delete`,
+
+export const tournament_routes = {
+  root: root_routes.tournament,
+  get: (id: string) => `${root_routes.tournament}/${id}`,
+  upload: (id: string) => `${root_routes.tournament}/upload/${id}`,
+  deleteLogo: (id: string) => `${root_routes.tournament}/deleteLogo/${id}`,
+  video: (id: string) => `${root_routes.tournament}/video/${id}`,
+  deleteVideo: (tournament_id: string, video_id: string) =>
+    `${root_routes.tournament}/video/${tournament_id}/${video_id}`,
+  image: (id: string) => `${root_routes.tournament}/image/${id}`,
+  deleteImage: (tournament_id: string, image_id: string) =>
+    `${root_routes.tournament}/image/${tournament_id}/${image_id}`,
 }
