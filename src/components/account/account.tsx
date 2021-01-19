@@ -11,9 +11,10 @@ import {
   TextField,
 } from "@material-ui/core"
 import { Observer } from "mobx-react-lite"
+import { useSnackbar } from "notistack"
 import React, { FC, useEffect, useMemo } from "react"
 import { admin_routes } from "../../main"
-import { useAuth, useAxios, useSnack } from "../../services"
+import { useAuth, useAxios } from "../../services"
 import { SaveButton } from "../common"
 import { AccountModel, PasswordModel } from "../models"
 import { TChangePasswordRequest } from "./types"
@@ -21,7 +22,7 @@ import { TChangePasswordRequest } from "./types"
 export const AdminAccount: FC = () => {
   const axios = useAxios()
   const auth = useAuth()
-  const { enqueueSnackbar } = useSnack()
+  const { enqueueSnackbar } = useSnackbar()
   const model = useMemo(() => {
     return AccountModel.create({})
   }, [])
@@ -33,7 +34,7 @@ export const AdminAccount: FC = () => {
   const update = async () => {
     model.setLoading(true)
     try {
-      await axios.makeRequest({ url: admin_routes.root, method: "PUT", data: model.json })
+      await axios.makeRequest({ url: admin_routes.root, method: "PATCH", data: model.json })
       enqueueSnackbar("Successfully saved", {
         variant: "success",
       })

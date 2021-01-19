@@ -1,9 +1,10 @@
 import { Card, CardContent, CardHeader, Grid, TextField } from "@material-ui/core"
 import { Observer } from "mobx-react-lite"
+import { useSnackbar } from "notistack"
 import React, { FC, useMemo } from "react"
 import { useHistory } from "react-router-dom"
 import { shop_routes } from "../../main"
-import { useAxios, useSnack } from "../../services"
+import { useAxios } from "../../services"
 import { Locker, SaveButton } from "../common"
 import { ShopCreateModel } from "../models"
 import { TShopUpdateProps } from "./types"
@@ -11,7 +12,7 @@ import { TShopUpdateProps } from "./types"
 export const ShopCreate: FC = () => {
   const axios = useAxios()
   const history = useHistory()
-  const { enqueueSnackbar } = useSnack()
+  const { enqueueSnackbar } = useSnackbar()
   const model = useMemo(() => {
     return ShopCreateModel.create()
   }, [])

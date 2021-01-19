@@ -1,9 +1,10 @@
 import { Card, CardContent, CardHeader, Grid, TextField } from "@material-ui/core"
 import { useObserver } from "mobx-react-lite"
+import { useSnackbar } from "notistack"
 import React, { FC, useMemo } from "react"
 import { useHistory } from "react-router-dom"
 import { tournament_routes } from "../../main"
-import { useAxios, useSnack } from "../../services"
+import { useAxios } from "../../services"
 import { Locker, SaveButton } from "../common"
 import { TournamentCreateModel } from "../models"
 import { TTournamentUpdateRequest } from "./types"
@@ -11,7 +12,7 @@ import { TTournamentUpdateRequest } from "./types"
 export const TournamentCreate: FC = () => {
   const axios = useAxios()
   const history = useHistory()
-  const { enqueueSnackbar } = useSnack()
+  const { enqueueSnackbar } = useSnackbar()
   const model = useMemo(() => {
     return TournamentCreateModel.create()
   }, [])

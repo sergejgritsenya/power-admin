@@ -1,9 +1,10 @@
-import { Card, CardHeader, CardContent, Grid, TextField } from "@material-ui/core"
+import { Card, CardContent, CardHeader, Grid, TextField } from "@material-ui/core"
 import { Observer } from "mobx-react-lite"
+import { useSnackbar } from "notistack"
 import React, { FC, useEffect, useMemo } from "react"
 import { useParams } from "react-router-dom"
 import { admin_routes } from "../../main"
-import { useAxios, useSnack } from "../../services"
+import { useAxios } from "../../services"
 import { AdminModel } from "../models"
 import { TAdmin } from "./types"
 
@@ -13,10 +14,10 @@ type TAdminLoaderProps = {
 export const Admin: FC = () => {
   const { id: admin_id } = useParams<TAdminLoaderProps>()
   const axios = useAxios()
-  const { enqueueSnackbar } = useSnack()
+  const { enqueueSnackbar } = useSnackbar()
 
   const model = useMemo(() => {
-    return AdminModel.create()
+    return AdminModel.create({ id: admin_id })
   }, [])
 
   const load = async () => {

@@ -1,18 +1,18 @@
 import { Card, CardContent, CardHeader, Grid, TextField } from "@material-ui/core"
 import { Observer } from "mobx-react-lite"
+import { useSnackbar } from "notistack"
 import React, { FC, useMemo } from "react"
 import { useHistory } from "react-router-dom"
 import { admin_routes } from "../../main"
-import { useAxios, useSnack } from "../../services"
-import { Locker } from "../common"
-import { SaveButton } from "../common"
+import { useAxios } from "../../services"
+import { Locker, SaveButton } from "../common"
 import { AdminCreateModel } from "../models"
 import { TAdminCreateRequest } from "./types"
 
 export const AdminCreate: FC = () => {
   const axios = useAxios()
   const history = useHistory()
-  const { enqueueSnackbar } = useSnack()
+  const { enqueueSnackbar } = useSnackbar()
   const admin = useMemo(() => {
     return AdminCreateModel.create()
   }, [])

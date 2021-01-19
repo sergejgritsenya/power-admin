@@ -1,8 +1,9 @@
 import { Tab, Tabs } from "@material-ui/core"
+import { useSnackbar } from "notistack"
 import React, { createContext, FC, useContext, useEffect, useMemo, useState } from "react"
 import { useParams } from "react-router-dom"
 import { shop_routes } from "../../main"
-import { useAxios, useSnack } from "../../services"
+import { useAxios } from "../../services"
 import { IShopModel, ShopModel } from "../models"
 import { ShopImagesList } from "./shop-image-list"
 import { ShopMain } from "./shop-main"
@@ -18,7 +19,7 @@ type TShopLoaderParams = {
 export const ShopLoader: FC = () => {
   const { id } = useParams<TShopLoaderParams>()
   const axios = useAxios()
-  const { enqueueSnackbar } = useSnack()
+  const { enqueueSnackbar } = useSnackbar()
   const [value, setValue] = useState<number>(0)
   const shop = useMemo(() => {
     return ShopModel.create({ id })

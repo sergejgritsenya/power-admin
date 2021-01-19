@@ -16,12 +16,11 @@ export const TournamentMain: FC = () => {
   const update = async () => {
     tournament.setLoading(true)
     try {
-      const res = await axios.makeRequest<TTournament, TTournamentUpdateRequest>({
+      await axios.makeRequest<TTournament, TTournamentUpdateRequest>({
         data: tournament.json,
-        method: "PUT",
+        method: "PATCH",
         url: tournament_routes.get(tournament.id),
       })
-      tournament.updateAll(res)
       enqueueSnackbar("Successfully saved", {
         variant: "success",
       })
@@ -86,14 +85,14 @@ const LogoUpload: FC = () => {
   const upload = async (data: FormData) => {
     const res = await axios.makeRequest<string, FormData>({
       data,
-      method: "PATCH",
+      method: "PUT",
       url: tournament_routes.upload(tournament.id),
     })
     tournament.setLogo(res)
   }
   const deleteLogo = async () => {
     await axios.makeRequest<string>({
-      method: "PATCH",
+      method: "DELETE",
       url: tournament_routes.deleteLogo(tournament.id),
     })
     tournament.setLogo("")

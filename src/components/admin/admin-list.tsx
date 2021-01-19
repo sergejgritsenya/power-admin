@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, Divider, Grid } from "@material-ui/core"
 import React, { FC } from "react"
-import { TAdminList } from "../../services"
 import { ApplyRemoveDialog, ButtonLink, NoElements } from "../common"
+import { TAdminList } from "./types"
 
 type TAdminListProps = {
   list: TAdminList[]

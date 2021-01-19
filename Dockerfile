@@ -1,5 +1,5 @@
 FROM node:12.16.2 as build
-ARG API_URL=http://localhost:3087
+ARG API_URL=http://localhost:3088
 WORKDIR /usr/src/app
 COPY package.json yarn.lock tsconfig.json ./
 RUN yarn

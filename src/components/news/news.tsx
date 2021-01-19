@@ -1,39 +1,15 @@
 import { Card, CardContent, CardHeader, Checkbox, Grid, TextField } from "@material-ui/core"
 import { Observer } from "mobx-react-lite"
 import React, { FC } from "react"
-import { Locker } from "../common"
+import { Locker, SaveButton } from "../common"
 import { INewsModel } from "../models"
 import { NewsLogoUpload } from "./news-logo-upload"
 
 type TNewsProps = {
   news: INewsModel
+  update: () => void
 }
-export const News: FC<TNewsProps> = ({ news }) => {
-  // const update = async () => {
-  //   news.setLoading(true)
-  //   try {
-  //     const res = await axios.sendPost<TNewsAdmin>(newsUpdate(news.id, news.json))
-  //     news.updateAll(res.data)
-  //     news.setLoading(false)
-  //     enqueueSnackbar("Successfully saved", {
-  //       variant: "success",
-  //     })
-  //   } catch (e) {
-  //     news.setLoading(false)
-  //     enqueueSnackbar("Error", {
-  //       variant: "error",
-  //     })
-  //     throw e
-  //   }
-  // }
-  return <NewsField news={news} />
-}
-
-type TNewsFieldProps = {
-  news: INewsModel
-  // update: () => void
-}
-const NewsField: FC<TNewsFieldProps> = ({ news }) => {
+export const News: FC<TNewsProps> = ({ news, update }) => {
   return (
     <Observer>
       {() => (
@@ -87,7 +63,7 @@ const NewsField: FC<TNewsFieldProps> = ({ news }) => {
                 <NewsLogoUpload news={news} />
               </Grid>
             </Grid>
-            {/* {news.validation && <SaveButton save={update} />} */}
+            {news.validation && <SaveButton save={update} />}
           </CardContent>
           {news.is_loading && <Locker />}
         </Card>

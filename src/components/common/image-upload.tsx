@@ -1,8 +1,8 @@
 import { Avatar, Button, makeStyles } from "@material-ui/core"
 import CloudUpload from "@material-ui/icons/CloudUpload"
 import Delete from "@material-ui/icons/Delete"
+import { useSnackbar } from "notistack"
 import React, { ChangeEvent, FC, useState } from "react"
-import { useSnack } from "../../services"
 import { Locker } from "./locker"
 import { FileUploadButton } from "./upload-button"
 
@@ -13,7 +13,7 @@ type TImageUploadProps = {
 }
 export const ImageUpload: FC<TImageUploadProps> = ({ src, upload, deleteLogo }) => {
   const { actions, avatar, root } = useStyles()
-  const { enqueueSnackbar } = useSnack()
+  const { enqueueSnackbar } = useSnackbar()
   const [is_loading, setIsLoading] = useState<boolean>(false)
 
   const _upload = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -71,11 +71,11 @@ export const ImageUpload: FC<TImageUploadProps> = ({ src, upload, deleteLogo }) 
 }
 
 type TImageItemUploadProps = {
-  upload: (file: File) => Promise<void>
+  upload: (data: FormData) => Promise<void>
 }
 export const ImageItemUpload: FC<TImageItemUploadProps> = ({ upload }) => {
   const { actions } = useStyles()
-  const { enqueueSnackbar } = useSnack()
+  const { enqueueSnackbar } = useSnackbar()
   const [is_loading, setIsLoading] = useState<boolean>(false)
 
   const _upload = async (e: ChangeEvent<HTMLInputElement>) => {
@@ -84,10 +84,12 @@ export const ImageItemUpload: FC<TImageItemUploadProps> = ({ upload }) => {
       const files = e.target.files
       if (files && files.length > 0) {
         const file = files[0]
-        await upload(file)
+        const data = new FormData()
+        data.append("file", file)
+        await upload(data)
       }
       e.target.value = ""
-      enqueueSnackbar("Successfully upload", {
+      enqueueSnackbar("Successfully uploaded", {
         variant: "success",
       })
     } catch (e) {

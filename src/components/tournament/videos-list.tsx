@@ -13,9 +13,10 @@ import {
   TextField,
 } from "@material-ui/core"
 import { useObserver } from "mobx-react-lite"
+import { useSnackbar } from "notistack"
 import React, { FC, useMemo, useState } from "react"
 import { tournament_routes } from "../../main"
-import { useAxios, useSnack } from "../../services"
+import { useAxios } from "../../services"
 import { ApplyRemoveDialog, NoElements } from "../common"
 import { ITournamentVideoModel, TournamentVideoCreateModel } from "../models"
 import { useTournamentContext } from "./tournament.loader"
@@ -24,13 +25,13 @@ import { TTournamentVideo, TTournamentVideoCreateRequest } from "./types"
 export const VideosList: FC = () => {
   const tournament = useTournamentContext()
   const axios = useAxios()
-  const { enqueueSnackbar } = useSnack()
+  const { enqueueSnackbar } = useSnackbar()
   const createVideo = async (data: TTournamentVideoCreateRequest) => {
     tournament.setLoading(true)
     try {
       const res = await axios.makeRequest<TTournamentVideo[], TTournamentVideoCreateRequest>({
         data,
-        method: "POST",
+        method: "PUT",
         url: tournament_routes.video(tournament.id),
       })
       tournament.setVideos(res)
@@ -50,7 +51,7 @@ export const VideosList: FC = () => {
     try {
       const res = await axios.makeRequest<TTournamentVideo[]>({
         method: "DELETE",
-        url: tournament_routes.deleteVideo(tournament.id, video_id),
+        url: tournament_routes.deleteVideo(video_id),
       })
       tournament.setVideos(res)
       enqueueSnackbar("Succesfully deleted", {

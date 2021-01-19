@@ -1,4 +1,5 @@
 import { Tab, Tabs } from "@material-ui/core"
+import { useSnackbar } from "notistack"
 import {
   createContext,
   default as React,
@@ -10,7 +11,7 @@ import {
 } from "react"
 import { useParams } from "react-router-dom"
 import { tournament_routes } from "../../main"
-import { useAxios, useSnack } from "../../services"
+import { useAxios } from "../../services"
 import { ITournamentModel, TournamentModel } from "../models"
 import { ImagesList } from "./images-list"
 import { TournamentMain } from "./tournament-main"
@@ -27,7 +28,7 @@ type TTournamentParams = {
 export const TournamentLoader: FC = () => {
   const { id } = useParams<TTournamentParams>()
   const axios = useAxios()
-  const { enqueueSnackbar } = useSnack()
+  const { enqueueSnackbar } = useSnackbar()
   const [value, setValue] = useState<number>(0)
   const tournament = useMemo(() => {
     return TournamentModel.create({ id, images: [], videos: [] })

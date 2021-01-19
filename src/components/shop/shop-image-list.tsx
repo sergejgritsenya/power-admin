@@ -12,9 +12,10 @@ import {
   makeStyles,
 } from "@material-ui/core"
 import { Observer } from "mobx-react-lite"
+import { useSnackbar } from "notistack"
 import React, { FC, useState } from "react"
 import { shop_routes } from "../../main"
-import { useAxios, useSnack } from "../../services"
+import { useAxios } from "../../services"
 import { ApplyRemoveDialog, ImageItemUpload, NoElements } from "../common"
 import { IShopImageModel } from "../models"
 import { useShopContext } from "./shop.loader"
@@ -23,35 +24,25 @@ import { TShopImage } from "./types"
 export const ShopImagesList: FC = () => {
   const shop = useShopContext()
   const axios = useAxios()
-  const { enqueueSnackbar } = useSnack()
-  const uploadImage = async (file: File) => {
-    shop.setLoading(true)
-    try {
-      const res = await axios.makeRequest<TShopImage[], File>({
-        data: file,
-        method: "PATCH",
-        url: shop_routes.upload(shop.id),
-      })
-      shop.setImages(res)
-      enqueueSnackbar("Succesfully uploaded", {
-        variant: "success",
-      })
-    } catch (e) {
-      enqueueSnackbar("Error", {
-        variant: "error",
-      })
-    } finally {
-      shop.setLoading(false)
-    }
+  const { enqueueSnackbar } = useSnackbar()
+
+  const upload = async (data: FormData) => {
+    const res = await axios.makeRequest<TShopImage, FormData>({
+      data,
+      method: "PUT",
+      url: shop_routes.image(shop.id),
+    })
+    const list = shop.addImage(res)
   }
+
   const deleteImage = async (image_id: string) => {
     shop.setLoading(true)
     try {
-      const res = await axios.makeRequest<TShopImage[]>({
+      await axios.makeRequest({
         method: "DELETE",
-        url: shop_routes.deleteImage(shop.id, image_id),
+        url: shop_routes.deleteImage(image_id),
       })
-      shop.setImages(res)
+      shop.deleteImage(image_id)
       enqueueSnackbar("Succesfully deleted", {
         variant: "success",
       })
@@ -72,7 +63,7 @@ export const ShopImagesList: FC = () => {
               <CardHeader title="Image list" />
             </Grid>
             <Grid item>
-              <ImageItemUpload upload={uploadImage} />
+              <ImageItemUpload upload={upload} />
             </Grid>
           </Grid>
           <CardContent>

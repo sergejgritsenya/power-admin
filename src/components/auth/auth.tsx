@@ -9,16 +9,17 @@ import {
 } from "@material-ui/core"
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined"
 import { Observer } from "mobx-react-lite"
+import { useSnackbar } from "notistack"
 import React, { FC, useMemo } from "react"
 import { useHistory } from "react-router-dom"
-import { useAuth, useSnack } from "../../services"
+import { useAuth } from "../../services"
 import { AuthModel } from "../models"
 
 export const Auth: FC = () => {
   const classes = useStyles()
   const history = useHistory()
   const auth = useAuth()
-  const { enqueueSnackbar } = useSnack()
+  const { enqueueSnackbar } = useSnackbar()
 
   const model = useMemo(() => AuthModel.create(), [])
 

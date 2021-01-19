@@ -1,8 +1,9 @@
 import { Card, CardContent, CardHeader, Grid, TextField } from "@material-ui/core"
 import { Observer } from "mobx-react-lite"
+import { useSnackbar } from "notistack"
 import React, { FC } from "react"
 import { shop_routes } from "../../main"
-import { useAxios, useSnack } from "../../services"
+import { useAxios } from "../../services"
 import { ImageUpload, Locker, SaveButton } from "../common"
 import { IShopModel } from "../models"
 import { useShopContext } from "./shop.loader"
@@ -11,27 +12,26 @@ import { TShop, TShopUpdateProps } from "./types"
 export const ShopMain: FC = () => {
   const shop = useShopContext()
   const axios = useAxios()
-  const { enqueueSnackbar } = useSnack()
+  const { enqueueSnackbar } = useSnackbar()
 
   const update = async () => {
     shop.setLoading(true)
     try {
-      const res = await axios.makeRequest<TShop, TShopUpdateProps>({
+      await axios.makeRequest<TShop, TShopUpdateProps>({
         data: shop.json,
         method: "PATCH",
         url: shop_routes.get(shop.id),
       })
-      shop.updateAll(res)
-      shop.setLoading(false)
       enqueueSnackbar("Successfully saved", {
         variant: "success",
       })
     } catch (e) {
-      shop.setLoading(false)
       enqueueSnackbar("Error", {
         variant: "error",
       })
       throw e
+    } finally {
+      shop.setLoading(false)
     }
   }
   return <ShopField shop={shop} update={update} />
@@ -97,7 +97,7 @@ const LogoUpload: FC = () => {
   const upload = async (data: FormData) => {
     const res = await axios.makeRequest<string, FormData>({
       data,
-      method: "PATCH",
+      method: "PUT",
       url: shop_routes.upload(shop.id),
     })
     shop.setLogo(res)

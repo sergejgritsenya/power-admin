@@ -13,14 +13,14 @@ export const NewsLogoUpload: FC<TNewsLogoUploadProps> = ({ news }) => {
   const upload = async (data: FormData) => {
     const res = await axios.makeRequest<string, FormData>({
       data,
-      method: "PATCH",
+      method: "PUT",
       url: news_routes.upload(news.id),
     })
     news.setLogo(res)
   }
   const deleteLogo = async () => {
     await axios.makeRequest<string, string>({
-      method: "PATCH",
+      method: "DELETE",
       url: news_routes.deleteLogo(news.id),
     })
     news.setLogo("")

@@ -1,7 +1,8 @@
-import { TNews } from "./news"
-import { TNewsTournament } from "./news-tournament"
-
 export type TNewsAdmin = {
-  news: TNews
-  tournaments: TNewsTournament[]
+  id: string
+  title: string
+  logo: string | null
+  publish: boolean
+  text: string
+  tournament_id: string | null
 }

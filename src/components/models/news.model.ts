@@ -37,7 +37,7 @@ const NewsTournamentModel = types.model({
 
 export const NewsModel = types
   .model({
-    id: "",
+    id: types.string,
     title: "",
     publish: false,
     logo: "",
@@ -76,10 +76,13 @@ export const NewsModel = types
     },
   }))
   .actions((self) => ({
-    updateAll(data: TNewsAdmin) {
-      self.setTitle(data.news.title)
-      self.setText(data.news.text)
-      self.setTournaments(data.tournaments)
+    updateAll(news: TNewsAdmin) {
+      self.setTitle(news.title)
+      self.setText(news.text)
+      // self.setTournaments(data.tournaments)
+      self.setPublish(news.publish)
+      self.setLogo(news.logo || "")
+      self.setTournament(news.tournament_id || "")
     },
   }))
   .views((self) => ({

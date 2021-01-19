@@ -12,9 +12,10 @@ import {
   makeStyles,
 } from "@material-ui/core"
 import { useObserver } from "mobx-react-lite"
+import { useSnackbar } from "notistack"
 import React, { FC, useState } from "react"
 import { tournament_routes } from "../../main"
-import { useAxios, useSnack } from "../../services"
+import { useAxios } from "../../services"
 import { ApplyRemoveDialog, ImageItemUpload, NoElements } from "../common"
 import { ITournamentImageModel } from "../models"
 import { useTournamentContext } from "./tournament.loader"
@@ -23,27 +24,15 @@ import { TTournamentImage } from "./types"
 export const ImagesList: FC = () => {
   const tournament = useTournamentContext()
   const axios = useAxios()
-  const { enqueueSnackbar } = useSnack()
+  const { enqueueSnackbar } = useSnackbar()
 
-  const uploadImage = async (file: File) => {
-    tournament.setLoading(true)
-    try {
-      const res = await axios.makeRequest<TTournamentImage[], File>({
-        data: file,
-        method: "POST",
-        url: tournament_routes.image(tournament.id),
-      })
-      tournament.setImages(res)
-      enqueueSnackbar("Succesfully uploaded", {
-        variant: "success",
-      })
-    } catch (e) {
-      enqueueSnackbar("Error", {
-        variant: "error",
-      })
-    } finally {
-      tournament.setLoading(false)
-    }
+  const upload = async (data: FormData) => {
+    const res = await axios.makeRequest<TTournamentImage[], FormData>({
+      data,
+      method: "PUT",
+      url: tournament_routes.image(tournament.id),
+    })
+    tournament.setImages(res)
   }
 
   const deleteImage = async (image_id: string) => {
@@ -51,7 +40,7 @@ export const ImagesList: FC = () => {
     try {
       const res = await axios.makeRequest<TTournamentImage[]>({
         method: "DELETE",
-        url: tournament_routes.deleteImage(tournament.id, image_id),
+        url: tournament_routes.deleteImage(image_id),
       })
       tournament.setImages(res)
       enqueueSnackbar("Succesfully deleted", {
@@ -72,7 +61,7 @@ export const ImagesList: FC = () => {
           <CardHeader title="Image list" />
         </Grid>
         <Grid item>
-          <ImageItemUpload upload={uploadImage} />
+          <ImageItemUpload upload={upload} />
         </Grid>
       </Grid>
       <CardContent>

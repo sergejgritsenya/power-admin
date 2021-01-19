@@ -1,13 +1,14 @@
+import { useSnackbar } from "notistack"
 import React, { FC, useEffect, useState } from "react"
 import { news_routes } from "../../main"
-import { useAxios, useSnack } from "../../services"
+import { useAxios } from "../../services"
 import { NoElements } from "../common"
 import { NewsList } from "./news-list"
 import { TNewsDeleteRequest, TNewsList } from "./types"
 
 export const NewsListLoader: FC = () => {
   const axios = useAxios()
-  const { enqueueSnackbar } = useSnack()
+  const { enqueueSnackbar } = useSnackbar()
   const [state, setState] = useState<TNewsList[]>([])
   const [is_loading, setIsLoading] = useState<boolean>(true)
 
@@ -28,11 +29,11 @@ export const NewsListLoader: FC = () => {
   const deleteNews = async (news_id: string) => {
     setIsLoading(true)
     try {
-      const list = await axios.makeRequest<TNewsList[], TNewsDeleteRequest>({
+      await axios.makeRequest<TNewsList[], TNewsDeleteRequest>({
         method: "DELETE",
         url: news_routes.get(news_id),
       })
-      setState(list)
+      setState(state.filter((news) => news.id !== news_id))
       enqueueSnackbar("Succesfully deleted", {
         variant: "success",
       })

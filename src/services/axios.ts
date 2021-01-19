@@ -1,5 +1,7 @@
 import axios, { AxiosInstance } from "axios"
-import { EAuthKey, ELocalStorageKeys, TAxiosRequest } from "./types"
+import { ELocalStorageKeys, TAxiosRequest } from "./types"
+
+const X_AUTH_ADMIN_TOKEN = "X-AUTH-POWER-ADMIN"
 
 export class AxiosService {
   private axios: AxiosInstance
@@ -19,7 +21,7 @@ export class AxiosService {
     const { data, method, url } = props
     const headers = {
       ...(props.headers || {}),
-      [EAuthKey.admin]: localStorage.getItem(ELocalStorageKeys.access) || "",
+      [X_AUTH_ADMIN_TOKEN]: localStorage.getItem(ELocalStorageKeys.access) || "",
     }
     const res = await this.axios(url, { data, headers, method })
     return res.data

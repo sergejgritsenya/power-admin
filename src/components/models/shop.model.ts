@@ -33,6 +33,12 @@ export const ShopModel = types
       const image_models = images.map((image) => ShopImageModel.create(image))
       self.images.replace(image_models)
     },
+    addImage(image: TShopImage) {
+      self.images.push(ShopImageModel.create(image))
+    },
+    deleteImage(image_id: string) {
+      self.images.replace(self.images.filter((img) => img.id == image_id))
+    },
   }))
   .actions((self) => ({
     updateAll(data: TShop) {

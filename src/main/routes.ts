@@ -35,8 +35,7 @@ export const shop_routes = {
   upload: (id: string) => `${root_routes.shop}/upload/${id}`,
   deleteLogo: (id: string) => `${root_routes.shop}/deleteLogo/${id}`,
   image: (id: string) => `${root_routes.shop}/image/${id}`,
-  deleteImage: (shop_id: string, image_id: string) =>
-    `${root_routes.shop}/image/${shop_id}/${image_id}`,
+  deleteImage: (image_id: string) => `${root_routes.shop}/image/${image_id}`,
 }
 
 export const tournament_routes = {
@@ -45,9 +44,7 @@ export const tournament_routes = {
   upload: (id: string) => `${root_routes.tournament}/upload/${id}`,
   deleteLogo: (id: string) => `${root_routes.tournament}/deleteLogo/${id}`,
   video: (id: string) => `${root_routes.tournament}/video/${id}`,
-  deleteVideo: (tournament_id: string, video_id: string) =>
-    `${root_routes.tournament}/video/${tournament_id}/${video_id}`,
+  deleteVideo: (video_id: string) => `${root_routes.tournament}/video/${video_id}`,
   image: (id: string) => `${root_routes.tournament}/image/${id}`,
-  deleteImage: (tournament_id: string, image_id: string) =>
-    `${root_routes.tournament}/image/${tournament_id}/${image_id}`,
+  deleteImage: (image_id: string) => `${root_routes.tournament}/image/${image_id}`,
 }
