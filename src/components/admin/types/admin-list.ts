@@ -1,6 +1,8 @@
-export type TAdminList = {
+type TAdminItem = {
   id: string
-  login: string
   email: string
   is_super: boolean
+  login: string
 }
+
+export type TAdminList = TAdminItem[]

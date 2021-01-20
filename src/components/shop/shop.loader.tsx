@@ -1,43 +1,99 @@
 import { Tab, Tabs } from "@material-ui/core"
+import { Observer } from "mobx-react-lite"
 import { useSnackbar } from "notistack"
-import React, { createContext, FC, useContext, useEffect, useMemo, useState } from "react"
+import React, { FC, useEffect, useMemo } from "react"
 import { useParams } from "react-router-dom"
 import { shop_routes } from "../../main"
 import { useAxios } from "../../services"
-import { IShopModel, ShopModel } from "../models"
+import { ShopModel } from "../models"
+import { Shop } from "./shop"
 import { ShopImagesList } from "./shop-image-list"
-import { ShopMain } from "./shop-main"
-import { TShop } from "./types"
-
-const ShopContext = createContext<IShopModel>(null as any)
-export const useShopContext = () => useContext(ShopContext)
+import { TShop, TShopUpdateProps } from "./types"
 
 type TShopLoaderParams = {
   id: string
 }
-
 export const ShopLoader: FC = () => {
   const { id } = useParams<TShopLoaderParams>()
   const axios = useAxios()
   const { enqueueSnackbar } = useSnackbar()
-  const [value, setValue] = useState<number>(0)
-  const shop = useMemo(() => {
-    return ShopModel.create({ id })
-  }, [])
+
+  const model = useMemo(() => ShopModel.create({ id }), [])
 
   const load = async () => {
-    shop.setLoading(true)
+    model.setLoading(true)
     try {
       const res = await axios.makeRequest<TShop>({
         url: shop_routes.get(id),
       })
-      shop.updateAll(res)
+      model.updateAll(res)
     } catch (e) {
       enqueueSnackbar("Error", {
         variant: "error",
       })
     } finally {
-      shop.setLoading(false)
+      model.setLoading(false)
+    }
+  }
+
+  const deleteLogo = async () => {
+    model.setLoading(true)
+    try {
+      await axios.makeRequest<string>({
+        method: "DELETE",
+        url: shop_routes.deleteLogo(model.id),
+      })
+      model.setLogo("")
+    } catch (e) {
+      enqueueSnackbar("Error", {
+        variant: "error",
+      })
+      throw e
+    } finally {
+      model.setLoading(false)
+    }
+  }
+
+  const update = async () => {
+    model.setLoading(true)
+    try {
+      await axios.makeRequest<TShop, TShopUpdateProps>({
+        data: model.json,
+        method: "PATCH",
+        url: shop_routes.get(model.id),
+      })
+      enqueueSnackbar("Successfully saved", {
+        variant: "success",
+      })
+    } catch (e) {
+      enqueueSnackbar("Error", {
+        variant: "error",
+      })
+      throw e
+    } finally {
+      model.setLoading(false)
+    }
+  }
+
+  const upload = async (data: FormData) => {
+    model.setLoading(true)
+    try {
+      const res = await axios.makeRequest<string, FormData>({
+        data,
+        method: "PUT",
+        url: shop_routes.upload(model.id),
+      })
+      model.setLogo(res)
+      enqueueSnackbar("Successfully saved", {
+        variant: "success",
+      })
+    } catch (e) {
+      enqueueSnackbar("Error", {
+        variant: "error",
+      })
+      throw e
+    } finally {
+      model.setLoading(false)
     }
   }
 
@@ -45,13 +101,19 @@ export const ShopLoader: FC = () => {
     load()
   }, [])
   return (
-    <ShopContext.Provider value={shop}>
-      <Tabs value={value} onChange={(_, val) => setValue(val)}>
-        <Tab value={0} label="Main" />
-        <Tab value={1} label="Images" />
-      </Tabs>
-      {value === 0 && <ShopMain />}
-      {value === 1 && <ShopImagesList />}
-    </ShopContext.Provider>
+    <Observer>
+      {() => (
+        <>
+          <Tabs value={model.tab} onChange={(_, val) => model.setTab(val)}>
+            <Tab value={0} label="Main" />
+            <Tab value={1} label="Images" />
+          </Tabs>
+          {model.tab === 0 && (
+            <Shop deleteLogo={deleteLogo} shop={model} update={update} upload={upload} />
+          )}
+          {model.tab === 1 && <ShopImagesList shop={model} />}
+        </>
+      )}
+    </Observer>
   )
 }

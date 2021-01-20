@@ -5,56 +5,59 @@ import { ShopImageModel } from "./shop-image.model"
 export const ShopModel = types
   .model({
     id: types.string,
-    name: "",
-    price: "",
-    logo: "",
     description: "",
     is_loading: false,
+    logo: "",
+    name: "",
+    price: "",
+    tab: 0,
     images: types.array(ShopImageModel),
   })
   .actions((self) => ({
+    setDescription(description: string) {
+      self.description = description
+    },
+    setLoading(is_loading: boolean) {
+      self.is_loading = is_loading
+    },
+    setLogo(logo: string) {
+      self.logo = logo
+    },
     setName(name: string) {
       self.name = name
     },
     setPrice(price: string) {
       self.price = price
     },
-    setLogo(logo: string) {
-      self.logo = logo
-    },
-    setDescription(description: string) {
-      self.description = description
-    },
-
-    setLoading(is_loading: boolean) {
-      self.is_loading = is_loading
-    },
-    setImages(images: TShopImage[]) {
-      const image_models = images.map((image) => ShopImageModel.create(image))
-      self.images.replace(image_models)
+    setTab(tab: number) {
+      self.tab = tab
     },
     addImage(image: TShopImage) {
       self.images.push(ShopImageModel.create(image))
     },
     deleteImage(image_id: string) {
-      self.images.replace(self.images.filter((img) => img.id == image_id))
+      self.images.replace(self.images.filter((img) => img.id !== image_id))
+    },
+    setImages(images: TShopImage[]) {
+      const image_models = images.map((image) => ShopImageModel.create(image))
+      self.images.replace(image_models)
     },
   }))
   .actions((self) => ({
     updateAll(data: TShop) {
+      self.setDescription(data.description)
+      self.setLogo(data.logo || "")
       self.setName(data.name)
       self.setPrice(data.price)
-      self.setLogo(data.logo || "")
-      self.setDescription(data.description)
       self.setImages(data.images)
     },
   }))
   .views((self) => ({
     get json(): TShopUpdateProps {
       return {
+        description: self.description.trim(),
         name: self.name.trim(),
         price: self.price.trim(),
-        description: self.description.trim(),
       }
     },
     get validation(): boolean {
@@ -66,31 +69,31 @@ export interface IShopModel extends Instance<typeof ShopModel> {}
 
 export const ShopCreateModel = types
   .model({
-    name: "",
-    price: "",
     description: "",
     is_loading: false,
+    name: "",
+    price: "",
   })
   .actions((self) => ({
-    setName(name: string) {
-      self.name = name
-    },
-    setPrice(price: string) {
-      self.price = price
-    },
     setDescription(description: string) {
       self.description = description
     },
     setLoading(is_loading: boolean) {
       self.is_loading = is_loading
     },
+    setName(name: string) {
+      self.name = name
+    },
+    setPrice(price: string) {
+      self.price = price
+    },
   }))
   .views((self) => ({
     get json(): TShopUpdateProps {
       return {
+        description: self.description.trim(),
         name: self.name.trim(),
         price: self.price.trim(),
-        description: self.description.trim(),
       }
     },
     get validation(): boolean {

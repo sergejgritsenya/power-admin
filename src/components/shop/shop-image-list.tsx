@@ -17,23 +17,15 @@ import React, { FC, useState } from "react"
 import { shop_routes } from "../../main"
 import { useAxios } from "../../services"
 import { ApplyRemoveDialog, ImageItemUpload, NoElements } from "../common"
-import { IShopImageModel } from "../models"
-import { useShopContext } from "./shop.loader"
+import { IShopImageModel, IShopModel } from "../models"
 import { TShopImage } from "./types"
 
-export const ShopImagesList: FC = () => {
-  const shop = useShopContext()
+type TShopImageListProps = {
+  shop: IShopModel
+}
+export const ShopImagesList: FC<TShopImageListProps> = ({ shop }) => {
   const axios = useAxios()
   const { enqueueSnackbar } = useSnackbar()
-
-  const upload = async (data: FormData) => {
-    const res = await axios.makeRequest<TShopImage, FormData>({
-      data,
-      method: "PUT",
-      url: shop_routes.image(shop.id),
-    })
-    const list = shop.addImage(res)
-  }
 
   const deleteImage = async (image_id: string) => {
     shop.setLoading(true)
@@ -54,6 +46,25 @@ export const ShopImagesList: FC = () => {
       shop.setLoading(false)
     }
   }
+
+  const upload = async (data: FormData) => {
+    shop.setLoading(true)
+    try {
+      const res = await axios.makeRequest<TShopImage, FormData>({
+        data,
+        method: "PUT",
+        url: shop_routes.image(shop.id),
+      })
+      const list = shop.addImage(res)
+    } catch (e) {
+      enqueueSnackbar("Error", {
+        variant: "error",
+      })
+    } finally {
+      shop.setLoading(false)
+    }
+  }
+
   return (
     <Observer>
       {() => (
@@ -84,23 +95,32 @@ export const ShopImagesList: FC = () => {
 }
 
 type TImageListItemProps = {
-  image: IShopImageModel
   deleteImage: (id: string) => void
+  image: IShopImageModel
 }
 const ImageListItem: FC<TImageListItemProps> = (props) => {
   const { image, deleteImage } = props
-  const classes = useStyles()
+  const { avatar } = useStyles()
   return (
     <div>
-      <Grid container justify="space-between" alignItems="center" style={{ padding: "7px 0" }}>
+      <Grid
+        container
+        justify="space-between"
+        alignItems="center"
+        style={{ padding: "7px 0" }}
+      >
         <Grid item xs={12} md={1}>
-          <Avatar src={image.url} variant="rounded" className={classes.avatar}></Avatar>
+          <Avatar src={image.url} variant="rounded" className={avatar}></Avatar>
         </Grid>
         <Grid item xs={12} md={4}>
           <ImageItemDialog url={image.url} />
         </Grid>
         <Grid item xs={12} md={4}>
-          <ApplyRemoveDialog id={image.id} removeEntity={deleteImage} entity_name="image" />
+          <ApplyRemoveDialog
+            id={image.id}
+            removeEntity={deleteImage}
+            entity_name="image"
+          />
         </Grid>
       </Grid>
       <Divider />
@@ -114,13 +134,13 @@ type TImageItemDialogProps = {
 const ImageItemDialog: FC<TImageItemDialogProps> = (props) => {
   const { url } = props
   const [open, setOpen] = useState<boolean>(false)
-  const classes = useStyles()
+  const { fullImg } = useStyles()
   return (
     <>
       <Button onClick={() => setOpen(true)}>More</Button>
       <Dialog open={open} onClose={() => setOpen(false)}>
         <DialogContent>
-          <img src={url} alt={"logo"} {...{ loading: "lazy" }} className={classes.fullImg} />
+          <img src={url} alt={"logo"} {...{ loading: "lazy" }} className={fullImg} />
         </DialogContent>
         <DialogActions>
           <Button color="secondary" onClick={() => setOpen(false)}>

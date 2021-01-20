@@ -13,12 +13,9 @@ type TImageUploadProps = {
 }
 export const ImageUpload: FC<TImageUploadProps> = ({ src, upload, deleteLogo }) => {
   const { actions, avatar, root } = useStyles()
-  const { enqueueSnackbar } = useSnackbar()
-  const [is_loading, setIsLoading] = useState<boolean>(false)
 
   const _upload = async (e: ChangeEvent<HTMLInputElement>) => {
     try {
-      setIsLoading(true)
       const files = e.target.files
       if (files && files.length > 0) {
         const file = files[0]
@@ -27,44 +24,25 @@ export const ImageUpload: FC<TImageUploadProps> = ({ src, upload, deleteLogo }) 
         await upload(data)
       }
       e.target.value = ""
-      enqueueSnackbar("Successfully uploaded", {
-        variant: "success",
-      })
     } catch (e) {
-      enqueueSnackbar("Error", {
-        variant: "error",
-      })
-    } finally {
-      setIsLoading(false)
-    }
-  }
-  const _remove = async () => {
-    try {
-      setIsLoading(true)
-      await deleteLogo()
-      enqueueSnackbar("Successfully removed", {
-        variant: "success",
-      })
-    } catch (e) {
-      enqueueSnackbar("Error", {
-        variant: "error",
-      })
-    } finally {
-      setIsLoading(false)
+      throw e
     }
   }
 
   return (
     <div className={root}>
-      <Avatar className={avatar} src={src || "/static/default-img.png"} variant="rounded" />
+      <Avatar
+        className={avatar}
+        src={src || "/static/default-img.png"}
+        variant="rounded"
+      />
       <div className={actions}>
         <FileUploadButton name="avatar" upload={_upload}>
           <CloudUpload />
         </FileUploadButton>
-        <Button color="secondary" fullWidth onClick={_remove}>
+        <Button color="secondary" fullWidth onClick={deleteLogo}>
           <Delete />
         </Button>
-        {is_loading && <Locker />}
       </div>
     </div>
   )

@@ -13,6 +13,7 @@ import { useSnackbar } from "notistack"
 import React, { FC, useMemo } from "react"
 import { useHistory } from "react-router-dom"
 import { useAuth } from "../../services"
+import { Locker } from "../common"
 import { AuthModel } from "../models"
 
 export const Auth: FC = () => {
@@ -28,8 +29,8 @@ export const Auth: FC = () => {
   }
 
   const login = async () => {
+    model.setLoading(true)
     try {
-      model.setLoading(true)
       await auth.login(model.json)
       enqueueSnackbar("Success", {
         variant: "success",
@@ -43,6 +44,7 @@ export const Auth: FC = () => {
       model.setLoading(false)
     }
   }
+
   return (
     <Observer>
       {() => (
@@ -84,9 +86,9 @@ export const Auth: FC = () => {
                   </Button>
                 </Grid>
               </Grid>
-              {/* <Locker show={model.is_loading} /> */}
             </div>
           </Container>
+          {model.is_loading && <Locker />}
         </form>
       )}
     </Observer>
@@ -94,14 +96,14 @@ export const Auth: FC = () => {
 }
 
 const useStyles = makeStyles((theme) => ({
+  avatar: {
+    margin: theme.spacing(1),
+    backgroundColor: theme.palette.primary.main,
+  },
   paper: {
     marginTop: theme.spacing(8),
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-  },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.primary.main,
   },
 }))

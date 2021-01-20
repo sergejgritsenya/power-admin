@@ -13,9 +13,9 @@ export const ShopCreate: FC = () => {
   const axios = useAxios()
   const history = useHistory()
   const { enqueueSnackbar } = useSnackbar()
-  const model = useMemo(() => {
-    return ShopCreateModel.create()
-  }, [])
+
+  const model = useMemo(() => ShopCreateModel.create(), [])
+
   const create = async () => {
     model.setLoading(true)
     try {
@@ -24,19 +24,20 @@ export const ShopCreate: FC = () => {
         method: "POST",
         url: shop_routes.root,
       })
-      model.setLoading(false)
       enqueueSnackbar("Successfully created", {
         variant: "success",
       })
       history.replace(`/shop/${res}`)
     } catch (e) {
-      model.setLoading(false)
       enqueueSnackbar("Error", {
         variant: "error",
       })
       throw e
+    } finally {
+      model.setLoading(false)
     }
   }
+
   return (
     <Observer>
       {() => (

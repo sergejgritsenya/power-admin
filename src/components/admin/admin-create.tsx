@@ -13,15 +13,14 @@ export const AdminCreate: FC = () => {
   const axios = useAxios()
   const history = useHistory()
   const { enqueueSnackbar } = useSnackbar()
-  const admin = useMemo(() => {
-    return AdminCreateModel.create()
-  }, [])
+
+  const model = useMemo(() => AdminCreateModel.create(), [])
 
   const create = async () => {
-    admin.setLoading(true)
+    model.setLoading(true)
     try {
       const res = await axios.makeRequest<string, TAdminCreateRequest>({
-        data: admin.json,
+        data: model.json,
         method: "POST",
         url: admin_routes.root,
       })
@@ -35,49 +34,49 @@ export const AdminCreate: FC = () => {
       })
       throw e
     } finally {
-      admin.setLoading(false)
+      model.setLoading(false)
     }
   }
   return (
     <Observer>
       {() => (
         <Card>
-          <CardHeader title={`Create new admin: ${admin.login}`} />
+          <CardHeader title={`Create new admin: ${model.login}`} />
           <CardContent>
             <Grid container>
               <Grid item xs={12} lg={6}>
                 <TextField
                   label="login"
-                  value={admin.login}
-                  onChange={(e) => admin.setLogin(e.target.value)}
+                  value={model.login}
+                  onChange={(e) => model.setLogin(e.target.value)}
                 />
               </Grid>
               <Grid item xs={12} lg={6}>
                 <TextField
                   label="email"
-                  value={admin.email}
-                  onChange={(e) => admin.setEmail(e.target.value)}
+                  value={model.email}
+                  onChange={(e) => model.setEmail(e.target.value)}
                 />
               </Grid>
               <Grid item xs={12} lg={6}>
                 <TextField
                   label="password"
                   type="password"
-                  value={admin.password}
-                  onChange={(e) => admin.setPassword(e.target.value)}
+                  value={model.password}
+                  onChange={(e) => model.setPassword(e.target.value)}
                 />
               </Grid>
               <Grid item xs={12} lg={6}>
                 <TextField
                   label="confirm password"
                   type="password"
-                  value={admin.confirm_password}
-                  onChange={(e) => admin.setConfirmPassword(e.target.value)}
+                  value={model.confirm_password}
+                  onChange={(e) => model.setConfirmPassword(e.target.value)}
                 />
               </Grid>
             </Grid>
-            {admin.validation && <SaveButton save={create} />}
-            {admin.is_loading && <Locker />}
+            {model.validation && <SaveButton save={create} />}
+            {model.is_loading && <Locker />}
           </CardContent>
         </Card>
       )}

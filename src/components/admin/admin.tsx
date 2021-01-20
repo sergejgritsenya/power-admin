@@ -5,6 +5,7 @@ import React, { FC, useEffect, useMemo } from "react"
 import { useParams } from "react-router-dom"
 import { admin_routes } from "../../main"
 import { useAxios } from "../../services"
+import { Locker } from "../common"
 import { AdminModel } from "../models"
 import { TAdmin } from "./types"
 
@@ -16,11 +17,10 @@ export const Admin: FC = () => {
   const axios = useAxios()
   const { enqueueSnackbar } = useSnackbar()
 
-  const model = useMemo(() => {
-    return AdminModel.create({ id: admin_id })
-  }, [])
+  const model = useMemo(() => AdminModel.create({ id: admin_id }), [])
 
   const load = async () => {
+    model.setLoading(true)
     try {
       const admin = await axios.makeRequest<TAdmin>({
         url: admin_routes.get(admin_id),
@@ -30,13 +30,14 @@ export const Admin: FC = () => {
       enqueueSnackbar("Error", {
         variant: "error",
       })
+    } finally {
+      model.setLoading(false)
     }
   }
 
   useEffect(() => {
     load()
   }, [])
-
   return (
     <Observer>
       {() => (
@@ -60,6 +61,7 @@ export const Admin: FC = () => {
               </Grid>
             </Grid>
           </CardContent>
+          {model.is_loading && <Locker />}
         </Card>
       )}
     </Observer>
