@@ -1,6 +1,6 @@
 import { TAuthRequest, TAuthResponse, TRefreshRequest } from "../components"
 import { TAdminResponse } from "../components/account/types/admin.response"
-import { auth_routes, admin_routes } from "../main"
+import { admin_routes, auth_routes } from "../main"
 import { useAxios } from "./axios"
 import { ELocalStorageKeys } from "./types"
 
@@ -26,7 +26,7 @@ class Auth {
   }
 
   public get is_loaded(): boolean {
-    return !!(this.access || this.refresh)
+    return !!(this.access && this.refresh)
   }
 
   public admin_me = async () => {

@@ -1,50 +1,60 @@
 import { Instance, types } from "mobx-state-tree"
-import {
-  TTournament,
-  TTournamentImage,
-  TTournamentUpdateRequest,
-  TTournamentVideo,
-} from "../tournament"
-import { TournamentImageModel } from "./tournament-image.model"
-import { TournamentVideoModel } from "./tournament-video.model"
+import { TMedia, TTournament, TTournamentUpdateRequest } from "../tournament"
+import { MediaModel } from "./media.model"
 
 export const TournamentModel = types
   .model({
     id: types.string,
-    name: "",
-    logo: "",
     description: "",
     is_loading: false,
-    images: types.array(TournamentImageModel),
-    videos: types.array(TournamentVideoModel),
+    logo: "",
+    name: "",
+    tab: 0,
+    images: types.optional(types.array(MediaModel), []),
+    videos: types.optional(types.array(MediaModel), []),
   })
   .actions((self) => ({
-    setName(name: string) {
-      self.name = name
-    },
-    setLogo(logo: string) {
-      self.logo = logo
-    },
     setDescription(description: string) {
       self.description = description
     },
     setLoading(is_loading: boolean) {
       self.is_loading = is_loading
     },
-    setImages(images: TTournamentImage[]) {
-      const image_models = images.map((image) => TournamentImageModel.create(image))
+    setLogo(logo: string) {
+      self.logo = logo
+    },
+    setName(name: string) {
+      self.name = name
+    },
+    setTab(tab: number) {
+      self.tab = tab
+    },
+    addImage(image: TMedia) {
+      self.images.push(MediaModel.create(image))
+    },
+    deleteImage(image_id: string) {
+      self.images.replace(self.images.filter((img) => img.id !== image_id))
+    },
+    setImages(images: TMedia[]) {
+      const image_models = images.map((image) => MediaModel.create(image))
       self.images.replace(image_models)
     },
-    setVideos(videos: TTournamentVideo[]) {
-      const video_models = videos.map((video) => TournamentVideoModel.create(video))
+    addVideo(video: TMedia) {
+      self.videos.push(MediaModel.create(video))
+    },
+    deleteVideo(video_id: string) {
+      self.videos.replace(self.videos.filter((video) => video.id !== video_id))
+    },
+    setVideos(videos: TMedia[]) {
+      const video_models = videos.map((video) => MediaModel.create(video))
       self.videos.replace(video_models)
     },
   }))
   .actions((self) => ({
     updateAll(data: TTournament) {
-      self.setName(data.name)
-      self.setLogo(data.logo || "")
       self.setDescription(data.description)
+      self.setLogo(data.logo || "")
+      self.setName(data.name)
       self.setImages(data.images)
       self.setVideos(data.videos)
     },
@@ -67,14 +77,14 @@ export const TournamentCreateModel = types
     is_loading: false,
   })
   .actions((self) => ({
-    setName(name: string) {
-      self.name = name
-    },
     setDescription(description: string) {
       self.description = description
     },
     setLoading(is_loading: boolean) {
       self.is_loading = is_loading
+    },
+    setName(name: string) {
+      self.name = name
     },
   }))
   .views((self) => ({

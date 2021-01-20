@@ -1,6 +1,6 @@
 import { Instance, types } from "mobx-state-tree"
 
-export const ShopImageModel = types
+export const MediaModel = types
   .model({
     id: types.string,
     url: "",
@@ -11,4 +11,4 @@ export const ShopImageModel = types
     },
   }))
 
-export interface IShopImageModel extends Instance<typeof ShopImageModel> {}
+export interface IMediaModel extends Instance<typeof MediaModel> {}

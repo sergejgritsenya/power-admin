@@ -12,29 +12,31 @@ import {
   makeStyles,
   TextField,
 } from "@material-ui/core"
-import { useObserver } from "mobx-react-lite"
+import { Observer } from "mobx-react-lite"
 import { useSnackbar } from "notistack"
 import React, { FC, useMemo, useState } from "react"
 import { tournament_routes } from "../../main"
 import { useAxios } from "../../services"
 import { ApplyRemoveDialog, NoElements } from "../common"
-import { ITournamentVideoModel, TournamentVideoCreateModel } from "../models"
-import { useTournamentContext } from "./tournament.loader"
-import { TTournamentVideo, TTournamentVideoCreateRequest } from "./types"
+import { IMediaModel, ITournamentModel, TournamentVideoCreateModel } from "../models"
+import { TMedia, TTournamentVideoCreateRequest } from "./types"
 
-export const VideosList: FC = () => {
-  const tournament = useTournamentContext()
+type TVideosListProps = {
+  tournament: ITournamentModel
+}
+export const VideosList: FC<TVideosListProps> = ({ tournament }) => {
   const axios = useAxios()
   const { enqueueSnackbar } = useSnackbar()
-  const createVideo = async (data: TTournamentVideoCreateRequest) => {
+
+  const create = async (data: TTournamentVideoCreateRequest) => {
     tournament.setLoading(true)
     try {
-      const res = await axios.makeRequest<TTournamentVideo[], TTournamentVideoCreateRequest>({
+      const res = await axios.makeRequest<TMedia, TTournamentVideoCreateRequest>({
         data,
         method: "PUT",
         url: tournament_routes.video(tournament.id),
       })
-      tournament.setVideos(res)
+      tournament.addVideo(res)
       tournament.setLoading(false)
       enqueueSnackbar("Succesfully created", {
         variant: "success",
@@ -46,14 +48,15 @@ export const VideosList: FC = () => {
       })
     }
   }
-  const deleteVideo = async (video_id: string) => {
+
+  const deleteOne = async (video_id: string) => {
     tournament.setLoading(true)
     try {
-      const res = await axios.makeRequest<TTournamentVideo[]>({
+      await axios.makeRequest({
         method: "DELETE",
         url: tournament_routes.deleteVideo(video_id),
       })
-      tournament.setVideos(res)
+      tournament.deleteVideo(video_id)
       enqueueSnackbar("Succesfully deleted", {
         variant: "success",
       })
@@ -65,43 +68,48 @@ export const VideosList: FC = () => {
       tournament.setLoading(false)
     }
   }
-  return useObserver(() => (
-    <Card>
-      <Grid container justify="space-between" alignItems="center">
-        <Grid item>
-          <CardHeader title="Video list" />
-        </Grid>
-        <Grid item>
-          <VideoCreateDialog createVideo={createVideo} />
-        </Grid>
-      </Grid>
-      <CardContent>
-        <div>
-          {tournament.videos.length ? (
-            tournament.videos.map((video) => (
-              <VideoListItem video={video} deleteVideo={deleteVideo} key={video.id} />
-            ))
-          ) : (
-            <NoElements />
-          )}
-        </div>
-      </CardContent>
-    </Card>
-  ))
+
+  return (
+    <Observer>
+      {() => (
+        <Card>
+          <Grid container justify="space-between" alignItems="center">
+            <Grid item>
+              <CardHeader title="Video list" />
+            </Grid>
+            <Grid item>
+              <VideoCreateDialog createOne={create} />
+            </Grid>
+          </Grid>
+          <CardContent>
+            <div>
+              {tournament.videos.length ? (
+                tournament.videos.map((video) => (
+                  <VideoListItem video={video} deleteVideo={deleteOne} key={video.id} />
+                ))
+              ) : (
+                <NoElements />
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </Observer>
+  )
 }
 
 type TVideoCreateItemProps = {
-  createVideo: (data: TTournamentVideoCreateRequest) => void
+  createOne: (data: TTournamentVideoCreateRequest) => void
 }
 const VideoCreateDialog: FC<TVideoCreateItemProps> = (props) => {
-  const { createVideo } = props
+  const { createOne } = props
   const classes = useStyles()
   const [open, setOpen] = useState<boolean>(false)
   const model = useMemo(() => {
     return TournamentVideoCreateModel.create()
   }, [])
   const create = () => {
-    createVideo(model.json)
+    createOne(model.json)
     setOpen(false)
     model.discard()
   }
@@ -109,49 +117,61 @@ const VideoCreateDialog: FC<TVideoCreateItemProps> = (props) => {
     setOpen(false)
     model.discard()
   }
-  return useObserver(() => (
-    <div className={classes.create}>
-      <Button color="primary" onClick={() => setOpen(true)}>
-        Add
-      </Button>
-      <Dialog open={open} onClose={close} maxWidth="sm" fullWidth>
-        <DialogTitle>Incorporate YouTube link</DialogTitle>
-        <DialogContent>
-          <TextField
-            label="url"
-            value={model.url}
-            onChange={(e) => model.setUrl(e.target.value)}
-            multiline
-            rows={4}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button color="secondary" onClick={close}>
-            Close
-          </Button>
-          <Button color="primary" onClick={create}>
+  return (
+    <Observer>
+      {() => (
+        <div className={classes.create}>
+          <Button color="primary" onClick={() => setOpen(true)}>
             Add
           </Button>
-        </DialogActions>
-      </Dialog>
-    </div>
-  ))
+          <Dialog open={open} onClose={close} maxWidth="sm" fullWidth>
+            <DialogTitle>Incorporate YouTube link</DialogTitle>
+            <DialogContent>
+              <TextField
+                label="url"
+                value={model.url}
+                onChange={(e) => model.setUrl(e.target.value)}
+                multiline
+                rows={4}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button color="secondary" onClick={close}>
+                Close
+              </Button>
+              <Button color="primary" onClick={create}>
+                Add
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </div>
+      )}
+    </Observer>
+  )
 }
 type TVideoListItemProps = {
-  video: ITournamentVideoModel
   deleteVideo: (id: string) => void
+  video: IMediaModel
 }
-const VideoListItem: FC<TVideoListItemProps> = (props) => {
-  const { video, deleteVideo } = props
-  const classes = useStyles()
+const VideoListItem: FC<TVideoListItemProps> = ({ video, deleteVideo }) => {
+  const { iframe } = useStyles()
   return (
     <div>
-      <Grid container justify="space-between" alignItems="center" style={{ padding: "7px 0" }}>
+      <Grid
+        container
+        justify="space-between"
+        alignItems="center"
+        style={{ padding: "7px 0" }}
+      >
         <Grid item xs={12} md={10}>
-          <div className={classes.iframe} dangerouslySetInnerHTML={{ __html: video.url }} />
+          <div className={iframe} dangerouslySetInnerHTML={{ __html: video.url }} />
         </Grid>
         <Grid item xs={12} md={2} container justify="center">
-          <ApplyRemoveDialog id={video.id} removeEntity={deleteVideo} entity_name="video" />
+          <ApplyRemoveDialog
+            id={video.id}
+            removeEntity={deleteVideo}
+            entity_name="video"
+          />
         </Grid>
       </Grid>
       <Divider />

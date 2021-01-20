@@ -11,38 +11,48 @@ import {
   Grid,
   makeStyles,
 } from "@material-ui/core"
-import { useObserver } from "mobx-react-lite"
+import { Observer } from "mobx-react-lite"
 import { useSnackbar } from "notistack"
 import React, { FC, useState } from "react"
 import { tournament_routes } from "../../main"
 import { useAxios } from "../../services"
 import { ApplyRemoveDialog, ImageItemUpload, NoElements } from "../common"
-import { ITournamentImageModel } from "../models"
-import { useTournamentContext } from "./tournament.loader"
-import { TTournamentImage } from "./types"
+import { IMediaModel, ITournamentModel } from "../models"
+import { TMedia } from "./types"
 
-export const ImagesList: FC = () => {
-  const tournament = useTournamentContext()
+type TImageListProps = {
+  tournament: ITournamentModel
+}
+export const ImagesList: FC<TImageListProps> = ({ tournament }) => {
   const axios = useAxios()
   const { enqueueSnackbar } = useSnackbar()
 
   const upload = async (data: FormData) => {
-    const res = await axios.makeRequest<TTournamentImage[], FormData>({
-      data,
-      method: "PUT",
-      url: tournament_routes.image(tournament.id),
-    })
-    tournament.setImages(res)
-  }
-
-  const deleteImage = async (image_id: string) => {
     tournament.setLoading(true)
     try {
-      const res = await axios.makeRequest<TTournamentImage[]>({
+      const res = await axios.makeRequest<TMedia, FormData>({
+        data,
+        method: "PUT",
+        url: tournament_routes.image(tournament.id),
+      })
+      tournament.addImage(res)
+    } catch (e) {
+      enqueueSnackbar("Error", {
+        variant: "error",
+      })
+    } finally {
+      tournament.setLoading(false)
+    }
+  }
+
+  const deleteOne = async (image_id: string) => {
+    tournament.setLoading(true)
+    try {
+      await axios.makeRequest({
         method: "DELETE",
         url: tournament_routes.deleteImage(image_id),
       })
-      tournament.setImages(res)
+      tournament.deleteImage(image_id)
       enqueueSnackbar("Succesfully deleted", {
         variant: "success",
       })
@@ -54,49 +64,57 @@ export const ImagesList: FC = () => {
       tournament.setLoading(false)
     }
   }
-  return useObserver(() => (
-    <Card>
-      <Grid container justify="space-between" alignItems="center">
-        <Grid item>
-          <CardHeader title="Image list" />
-        </Grid>
-        <Grid item>
-          <ImageItemUpload upload={upload} />
-        </Grid>
-      </Grid>
-      <CardContent>
-        <div>
-          {tournament.images.length ? (
-            tournament.images.map((image) => (
-              <ImageListItem image={image} deleteImage={deleteImage} key={image.id} />
-            ))
-          ) : (
-            <NoElements />
-          )}
-        </div>
-      </CardContent>
-    </Card>
-  ))
+  return (
+    <Observer>
+      {() => (
+        <Card>
+          <Grid container justify="space-between" alignItems="center">
+            <Grid item>
+              <CardHeader title="Image list" />
+            </Grid>
+            <Grid item>
+              <ImageItemUpload upload={upload} />
+            </Grid>
+          </Grid>
+          <CardContent>
+            <div>
+              {tournament.images.length ? (
+                tournament.images.map((image) => (
+                  <ImageListItem image={image} deleteOne={deleteOne} key={image.id} />
+                ))
+              ) : (
+                <NoElements />
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </Observer>
+  )
 }
 
 type TImageListItemProps = {
-  image: ITournamentImageModel
-  deleteImage: (id: string) => void
+  image: IMediaModel
+  deleteOne: (id: string) => void
 }
-const ImageListItem: FC<TImageListItemProps> = (props) => {
-  const { image, deleteImage } = props
-  const classes = useStyles()
+const ImageListItem: FC<TImageListItemProps> = ({ image, deleteOne }) => {
+  const { avatar } = useStyles()
   return (
     <div>
-      <Grid container justify="space-between" alignItems="center" style={{ padding: "7px 0" }}>
+      <Grid
+        container
+        justify="space-between"
+        alignItems="center"
+        style={{ padding: "7px 0" }}
+      >
         <Grid item xs={12} md={1}>
-          <Avatar src={image.url} variant="rounded" className={classes.avatar}></Avatar>
+          <Avatar src={image.url} variant="rounded" className={avatar}></Avatar>
         </Grid>
         <Grid item xs={12} md={4}>
           <ImageItemDialog url={image.url} />
         </Grid>
         <Grid item xs={12} md={4}>
-          <ApplyRemoveDialog id={image.id} removeEntity={deleteImage} entity_name="image" />
+          <ApplyRemoveDialog id={image.id} removeEntity={deleteOne} entity_name="image" />
         </Grid>
       </Grid>
       <Divider />
@@ -107,16 +125,15 @@ const ImageListItem: FC<TImageListItemProps> = (props) => {
 type TImageItemDialogProps = {
   url: string
 }
-const ImageItemDialog: FC<TImageItemDialogProps> = (props) => {
-  const { url } = props
+const ImageItemDialog: FC<TImageItemDialogProps> = ({ url }) => {
   const [open, setOpen] = useState<boolean>(false)
-  const classes = useStyles()
+  const { fullImg } = useStyles()
   return (
     <>
       <Button onClick={() => setOpen(true)}>More</Button>
       <Dialog open={open} onClose={() => setOpen(false)}>
         <DialogContent>
-          <img src={url} alt={"logo"} {...{ loading: "lazy" }} className={classes.fullImg} />
+          <img src={url} alt={"logo"} {...{ loading: "lazy" }} className={fullImg} />
         </DialogContent>
         <DialogActions>
           <Button color="secondary" onClick={() => setOpen(false)}>

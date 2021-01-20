@@ -1,6 +1,6 @@
 import { Instance, types } from "mobx-state-tree"
 import { TShop, TShopImage, TShopUpdateProps } from "../shop"
-import { ShopImageModel } from "./shop-image.model"
+import { MediaModel } from "./media.model"
 
 export const ShopModel = types
   .model({
@@ -11,7 +11,7 @@ export const ShopModel = types
     name: "",
     price: "",
     tab: 0,
-    images: types.array(ShopImageModel),
+    images: types.array(MediaModel),
   })
   .actions((self) => ({
     setDescription(description: string) {
@@ -33,13 +33,13 @@ export const ShopModel = types
       self.tab = tab
     },
     addImage(image: TShopImage) {
-      self.images.push(ShopImageModel.create(image))
+      self.images.push(MediaModel.create(image))
     },
     deleteImage(image_id: string) {
       self.images.replace(self.images.filter((img) => img.id !== image_id))
     },
     setImages(images: TShopImage[]) {
-      const image_models = images.map((image) => ShopImageModel.create(image))
+      const image_models = images.map((image) => MediaModel.create(image))
       self.images.replace(image_models)
     },
   }))

@@ -17,7 +17,7 @@ import React, { FC, useState } from "react"
 import { shop_routes } from "../../main"
 import { useAxios } from "../../services"
 import { ApplyRemoveDialog, ImageItemUpload, NoElements } from "../common"
-import { IShopImageModel, IShopModel } from "../models"
+import { IMediaModel, IShopModel } from "../models"
 import { TShopImage } from "./types"
 
 type TShopImageListProps = {
@@ -96,7 +96,7 @@ export const ShopImagesList: FC<TShopImageListProps> = ({ shop }) => {
 
 type TImageListItemProps = {
   deleteImage: (id: string) => void
-  image: IShopImageModel
+  image: IMediaModel
 }
 const ImageListItem: FC<TImageListItemProps> = (props) => {
   const { image, deleteImage } = props

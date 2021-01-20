@@ -1,11 +1,10 @@
-import { TTournamentImage } from "./tournament-image"
-import { TTournamentVideo } from "./tournament-video"
+import { TMedia } from "./media"
 
 export type TTournament = {
   id: string
   name: string
   logo: string | null
   description: string
-  videos: TTournamentVideo[]
-  images: TTournamentImage[]
+  videos: TMedia[]
+  images: TMedia[]
 }

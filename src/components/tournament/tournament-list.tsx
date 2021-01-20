@@ -1,48 +1,54 @@
-import { Avatar, Card, CardContent, CardHeader, Divider, Grid, makeStyles } from "@material-ui/core"
+import {
+  Avatar,
+  Card,
+  CardContent,
+  CardHeader,
+  Divider,
+  Grid,
+  makeStyles,
+} from "@material-ui/core"
 import React, { FC } from "react"
 import { ApplyRemoveDialog, ButtonLink, NoElements } from "../common"
 import { TTournamentList } from "./types"
 
 type TTournamentListProps = {
-  list: TTournamentList[]
-  deleteTournament: (tournament_id: string) => void
+  deleteOne: (tournament_id: string) => void
+  list: TTournamentList
 }
-export const TournamentList: FC<TTournamentListProps> = ({ list, deleteTournament }) => {
-  return (
-    <Card>
-      <CardContent>
-        <Grid container justify="space-between" alignItems="center">
-          <Grid item>
-            <CardHeader title="Tournament list" />
-          </Grid>
-          <Grid item>
-            <ButtonLink to="/tournaments/create" color="primary">
-              Create
-            </ButtonLink>
-          </Grid>
+export const TournamentList: FC<TTournamentListProps> = ({ list, deleteOne }) => (
+  <Card>
+    <CardContent>
+      <Grid container justify="space-between" alignItems="center">
+        <Grid item>
+          <CardHeader title="Tournament list" />
         </Grid>
-        <Grid container justify="flex-start" alignItems="center">
-          <Grid item xs={12} md={6} lg={2}>
-            <h3>Logo</h3>
-          </Grid>
-          <Grid item xs={12} md={6} lg={4}>
-            <h3>Name</h3>
-          </Grid>
-          <Grid item xs={12} md={6} lg={3} />
-          <Grid item xs={12} md={6} lg={3} />
+        <Grid item>
+          <ButtonLink to="/tournaments/create" color="primary">
+            Create
+          </ButtonLink>
         </Grid>
-        <TournamentListTable list={list} deleteTournament={deleteTournament} />
-      </CardContent>
-    </Card>
-  )
-}
+      </Grid>
+      <Grid container justify="flex-start" alignItems="center">
+        <Grid item xs={12} md={6} lg={2}>
+          <h3>Logo</h3>
+        </Grid>
+        <Grid item xs={12} md={6} lg={4}>
+          <h3>Name</h3>
+        </Grid>
+        <Grid item xs={12} md={6} lg={3} />
+        <Grid item xs={12} md={6} lg={3} />
+      </Grid>
+      <TournamentListTable list={list} deleteOne={deleteOne} />
+    </CardContent>
+  </Card>
+)
 
 type TTournamentListTableProps = {
-  list: TTournamentList[]
-  deleteTournament: (tournament_id: string) => void
+  deleteOne: (tournament_id: string) => void
+  list: TTournamentList
 }
-const TournamentListTable: FC<TTournamentListTableProps> = ({ list, deleteTournament }) => {
-  const classes = useStyles()
+const TournamentListTable: FC<TTournamentListTableProps> = ({ list, deleteOne }) => {
+  const { avatar } = useStyles()
 
   if (!list.length) {
     return <NoElements />
@@ -51,13 +57,14 @@ const TournamentListTable: FC<TTournamentListTableProps> = ({ list, deleteTourna
     <div>
       {list.map((tournament) => (
         <div key={tournament.id}>
-          <Grid container justify="flex-start" alignItems="center" style={{ padding: "7px 0" }}>
+          <Grid
+            container
+            justify="flex-start"
+            alignItems="center"
+            style={{ padding: "7px 0" }}
+          >
             <Grid item xs={12} md={6} lg={2}>
-              {tournament.logo ? (
-                <Avatar src={tournament.logo} variant="rounded" className={classes.avatar} />
-              ) : (
-                ""
-              )}
+              <Avatar src={tournament.logo || ""} variant="rounded" className={avatar} />
             </Grid>
             <Grid item xs={12} md={6} lg={4}>
               {tournament.name}
@@ -68,7 +75,7 @@ const TournamentListTable: FC<TTournamentListTableProps> = ({ list, deleteTourna
             <Grid item xs={12} md={6} lg={3}>
               <ApplyRemoveDialog
                 id={tournament.id}
-                removeEntity={deleteTournament}
+                removeEntity={deleteOne}
                 entity_name="tournament"
               />
             </Grid>
@@ -80,7 +87,7 @@ const TournamentListTable: FC<TTournamentListTableProps> = ({ list, deleteTourna
   )
 }
 
-const useStyles = makeStyles((_theme) => ({
+const useStyles = makeStyles(() => ({
   avatar: {
     width: "auto",
     display: "flex",
