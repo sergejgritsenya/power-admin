@@ -13,9 +13,9 @@ export const NewsCreate: FC = () => {
   const axios = useAxios()
   const history = useHistory()
   const { enqueueSnackbar } = useSnackbar()
-  const model = useMemo(() => {
-    return NewsCreateModel.create()
-  }, [])
+
+  const model = useMemo(() => NewsCreateModel.create(), [])
+
   const create = async () => {
     model.setLoading(true)
     try {
@@ -24,19 +24,20 @@ export const NewsCreate: FC = () => {
         method: "POST",
         url: news_routes.root,
       })
-      model.setLoading(false)
       enqueueSnackbar("Successfully created", {
         variant: "success",
       })
       history.replace(`/news/${res}`)
     } catch (e) {
-      model.setLoading(false)
       enqueueSnackbar("Error", {
         variant: "error",
       })
       throw e
+    } finally {
+      model.setLoading(false)
     }
   }
+
   return (
     <Observer>
       {() => (

@@ -1,5 +1,11 @@
 import { Instance, types } from "mobx-state-tree"
-import { TNewsAdmin, TNewsCreateRequest, TNewsTournament, TNewsUpdateProps } from "../news"
+import {
+  TNewsAdmin,
+  TNewsCreateRequest,
+  TNewsTournament,
+  TNewsUpdateProps,
+} from "../news"
+import { TTournamentList } from "../tournament"
 
 export const NewsCreateModel = types
   .model({
@@ -76,10 +82,10 @@ export const NewsModel = types
     },
   }))
   .actions((self) => ({
-    updateAll(news: TNewsAdmin) {
+    updateAll(news: TNewsAdmin, tournaments: TTournamentList) {
       self.setTitle(news.title)
       self.setText(news.text)
-      // self.setTournaments(data.tournaments)
+      self.setTournaments(tournaments)
       self.setPublish(news.publish)
       self.setLogo(news.logo || "")
       self.setTournament(news.tournament_id || "")

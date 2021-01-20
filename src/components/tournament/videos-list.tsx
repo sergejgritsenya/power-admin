@@ -105,14 +105,15 @@ const VideoCreateDialog: FC<TVideoCreateItemProps> = (props) => {
   const { createOne } = props
   const classes = useStyles()
   const [open, setOpen] = useState<boolean>(false)
-  const model = useMemo(() => {
-    return TournamentVideoCreateModel.create()
-  }, [])
+
+  const model = useMemo(() => TournamentVideoCreateModel.create(), [])
+
   const create = () => {
     createOne(model.json)
     setOpen(false)
     model.discard()
   }
+
   const close = () => {
     setOpen(false)
     model.discard()
