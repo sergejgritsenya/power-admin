@@ -1,5 +1,6 @@
 FROM node:12.16.2 as build
 ARG API_URL=http://localhost:3088
+# ARG API_URL=http://api.classicsport.pw
 WORKDIR /usr/src/app
 COPY package.json yarn.lock tsconfig.json ./
 RUN yarn
